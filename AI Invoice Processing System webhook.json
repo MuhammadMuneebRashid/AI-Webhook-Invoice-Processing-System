@@ -1,0 +1,986 @@
+{
+  "name": "My workflow 15",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "23ff990d-1017-4c3f-98a4-ac86f33f82e4",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "15ffe1b5-4aae-4c23-846b-08ad17d8371c",
+      "name": "Webhook",
+      "webhookId": "23ff990d-1017-4c3f-98a4-ac86f33f82e4"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.body.data.fields[3].value[0].url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "fd538b0f-1073-404b-bdd0-56f54701c871",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        416,
+        0
+      ],
+      "id": "16d7d348-3de1-4a64-8531-e491eb42d3d4",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=you are an invoice assistant analyze it company name{{ $json['company name'] }}, department{{ $json.department }} ,invoice category{{ $json['invoice category'] }},extract data from pdf vendor ,invoice no, date,due date,item, amount, tax,total {{ $('Extract from File').item.json.text }}if it is less then or equal to 1000 then write the subject and text mail to finance team of proceeding successfully,if it is between 1001-5000 then make a subject and text mail send it to finance manager of manual Review,if more the 5000 then send a text mail with subject to finanace manager and account head . response in JSON; don't add extra data",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1152,
+        32
+      ],
+      "id": "f968ec92-625f-45b1-952b-8e0e382ef471",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        1040,
+        272
+      ],
+      "id": "a5b5a50f-c77d-4511-9ca2-b5a0cd467906",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": null,
+          "name": "",
+          "__aiGatewayManaged": true
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"company_name\":\"\",\n  \"department\":\"\",\n  \"invoice_category\":\"\",\n  \"vendor\":\"\",\n  \"invoice_no\":\"\",\n  \"item\":\"\",\n  \"date\":\"\",\n  \"due_date\":\"\",\n  \"amount\":\"\",\n  \"tax\":\"\",\n  \"total\":\"\",\n  \"subject\":\"\",\n  \"email\":\"\"\n  \n  \n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1408,
+        256
+      ],
+      "id": "6b9f2894-a32e-435a-a2d8-460ad1f0ca51",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0ee8a976-40e5-43d2-a2d8-3b648db99a69",
+              "name": "company name",
+              "value": "={{$json.body.data.fields[0].value}}",
+              "type": "string"
+            },
+            {
+              "id": "f8b32610-ddd1-4242-b621-d25e72768f32",
+              "name": "invoice category",
+              "value": "={{ $json.body.data.fields[2].options.find(\noption => option.id === $json.body.data.fields[2].value[0]\n).text }}",
+              "type": "string"
+            },
+            {
+              "id": "fbb5dd78-5936-427e-983c-a7e6ade07e34",
+              "name": "department",
+              "value": "={{ $json.body.data.fields[1].options.find( option => option.id === $json.body.data.fields[1].value[0] ).text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        864,
+        32
+      ],
+      "id": "31827c0f-ba99-447d-8a7c-3bbe38b407a3",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        624,
+        32
+      ],
+      "id": "214c35c8-90fd-45c1-be3a-94df2301b968",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ff924bff-c6ba-462a-9147-46feeb604066",
+              "name": "comapny name",
+              "value": "={{ $json.output.company_name }}",
+              "type": "string"
+            },
+            {
+              "id": "5abfbc29-585b-4b10-9f77-7ccdcea07a45",
+              "name": "department",
+              "value": "={{ $json.output.department }}",
+              "type": "string"
+            },
+            {
+              "id": "6f30048c-33dd-4cf8-8e16-42f8717d89b4",
+              "name": "invoice_category",
+              "value": "={{ $json.output.invoice_category }}",
+              "type": "string"
+            },
+            {
+              "id": "d2b4d752-fa07-411b-87d6-1d580cfe4e79",
+              "name": "vendor",
+              "value": "={{ $json.output.vendor }}",
+              "type": "string"
+            },
+            {
+              "id": "a3ba9d8a-c0b3-49d9-9400-686c046e7d37",
+              "name": "invoice_no",
+              "value": "={{ $json.output.invoice_no }}",
+              "type": "string"
+            },
+            {
+              "id": "2511b42c-49bb-4ff2-a0e4-3848ac126450",
+              "name": "item",
+              "value": "={{ $json.output.item }}",
+              "type": "string"
+            },
+            {
+              "id": "270f2dc7-1556-4e5d-af38-19c4811f1340",
+              "name": "date",
+              "value": "={{ $json.output.date }}",
+              "type": "string"
+            },
+            {
+              "id": "7e782e8b-e744-4051-9a32-fd5763c1746c",
+              "name": "due_date",
+              "value": "={{ $json.output.due_date }}",
+              "type": "string"
+            },
+            {
+              "id": "664b30db-75f6-4b35-aa25-77910d5e0b71",
+              "name": "amount",
+              "value": "={{ $json.output.amount }}",
+              "type": "string"
+            },
+            {
+              "id": "b6c47157-127a-4579-8ca0-9ea8fc7e42e9",
+              "name": "tax",
+              "value": "={{ $json.output.tax }}",
+              "type": "string"
+            },
+            {
+              "id": "674baa13-63bd-4621-a5be-adf7d121dfb2",
+              "name": "total",
+              "value": "={{ $json.output.total }}",
+              "type": "string"
+            },
+            {
+              "id": "93e6cf89-3a86-424c-9076-a3afe9a97425",
+              "name": "subject",
+              "value": "={{ $json.output.subject }}",
+              "type": "string"
+            },
+            {
+              "id": "1c36d3d7-3941-4b57-8836-d074d027fbbe",
+              "name": "email",
+              "value": "={{ $json.output.email }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1568,
+        32
+      ],
+      "id": "5488ac97-63e6-4961-a792-16909fa2a73e",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ Number(String($json.total).replace('$', '').trim()) }}",
+                    "rightValue": 1000,
+                    "operator": {
+                      "type": "number",
+                      "operation": "lte"
+                    },
+                    "id": "fd5c1b20-a8c7-42fb-b7cf-ca7da1ac5914"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "6485a91f-84a9-4623-9aee-3496a03468a6",
+                    "leftValue": "={{ Number(String($json.total).replace('$', '').trim()) }}",
+                    "rightValue": 3000,
+                    "operator": {
+                      "type": "number",
+                      "operation": "lte"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "c434dfe1-a060-4a1f-8664-7a2c977b0259",
+                    "leftValue": "={{ Number(String($json.total).replace('$', '').trim()) }}",
+                    "rightValue": 5500,
+                    "operator": {
+                      "type": "number",
+                      "operation": "lte"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        2016,
+        16
+      ],
+      "id": "12fbcca9-9d78-45f3-8b16-49f8bc4c46a1",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "sendTo": "muneeb79rashid@gmail.com",
+        "subject": "={{ $json.subject }}",
+        "emailType": "text",
+        "message": "={{ $json.email }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2464,
+        -192
+      ],
+      "id": "c985d96b-f703-4a8a-aeb9-950a9c9a313a",
+      "name": "Send a message",
+      "webhookId": "d3e625da-6ef6-48c8-bc60-5720d2637b66",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "5Aio4SSxCCiQCf49",
+          "name": "Gmail account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "muneeb79rashid@gmail.com",
+        "subject": "={{ $('Edit Fields1').item.json.subject }}",
+        "emailType": "text",
+        "message": "={{ $('Edit Fields1').item.json.email }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2464,
+        -32
+      ],
+      "id": "554bb9b9-cad1-4933-b8ca-d4d912f0c173",
+      "name": "Send a message1",
+      "webhookId": "7a74df11-a395-429a-83cb-c2943654764d",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "5Aio4SSxCCiQCf49",
+          "name": "Gmail account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "muneeb56rashid@gmail.com",
+        "subject": "={{ $('Edit Fields1').item.json.subject }}",
+        "emailType": "text",
+        "message": "={{ $('Edit Fields1').item.json.email }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2464,
+        304
+      ],
+      "id": "002ebb6d-cea8-4125-a271-d68c37c9e602",
+      "name": "Send a message2",
+      "webhookId": "592c6a7e-5f40-497f-804e-83ef3f3d28ce",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "5Aio4SSxCCiQCf49",
+          "name": "Gmail account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "15zw9Na3I_Bueaqf2Ox1YrKqixaOCstCk2dWs3TDYstQ",
+          "mode": "list",
+          "cachedResultName": "wehbook",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15zw9Na3I_Bueaqf2Ox1YrKqixaOCstCk2dWs3TDYstQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15zw9Na3I_Bueaqf2Ox1YrKqixaOCstCk2dWs3TDYstQ/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "output",
+              "displayName": "output",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "customer_name",
+              "displayName": "customer_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "customer_message",
+              "displayName": "customer_message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ai_reply",
+              "displayName": "ai_reply",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "company",
+              "displayName": "company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "budget",
+              "displayName": "budget",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "service",
+              "displayName": "service",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "threadId",
+              "displayName": "threadId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "labelIds",
+              "displayName": "labelIds",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "candidate_name",
+              "displayName": "candidate_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "years_of_experience",
+              "displayName": "years_of_experience",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "skills_in_form",
+              "displayName": "skills_in_form",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "strengths",
+              "displayName": "strengths",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "weakness",
+              "displayName": "weakness",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "recommendation",
+              "displayName": "recommendation",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "reasons",
+              "displayName": "reasons",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "interview_questions",
+              "displayName": "interview_questions",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "skills_in_cv",
+              "displayName": "skills_in_cv",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "missing_skills",
+              "displayName": "missing_skills",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "candidate_score",
+              "displayName": "candidate_score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "estimated_salary",
+              "displayName": "estimated_salary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ai_response",
+              "displayName": "ai_response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "comapny name",
+              "displayName": "comapny name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "department",
+              "displayName": "department",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "invoice_category",
+              "displayName": "invoice_category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "vendor",
+              "displayName": "vendor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "invoice_no",
+              "displayName": "invoice_no",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "item",
+              "displayName": "item",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "date",
+              "displayName": "date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "due_date",
+              "displayName": "due_date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "amount",
+              "displayName": "amount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "tax",
+              "displayName": "tax",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "total",
+              "displayName": "total",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "subject",
+              "displayName": "subject",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1792,
+        32
+      ],
+      "id": "140f21bb-4121-46a4-87bc-b368070a8c36",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Tj82MOfAAOJOn2fi",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "muneeb68rashid@gmail.com",
+        "subject": "={{ $('Append row in sheet').item.json.subject }}",
+        "message": "={{ $('Append row in sheet').item.json.email }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2464,
+        144
+      ],
+      "id": "579eb637-dc86-4b65-a1d5-86aaa6364cee",
+      "name": "Send a message3",
+      "webhookId": "5fe2bbe9-832d-486c-813c-7ba288c35439",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "5Aio4SSxCCiQCf49",
+          "name": "Gmail account 3"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a message3",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message3": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "62cf2531-098c-4ac1-9b45-4e635071b1b1",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "49632c978aa19314c777a54ee16e828e5331fdf445f4f0eaaad7b722975a8cb1"
+  },
+  "nodeGroups": [],
+  "id": "QXDQ1QDa6j986ALz",
+  "tags": []
+}
