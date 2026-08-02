@@ -325,7 +325,7 @@
     },
     {
       "parameters": {
-        "sendTo": "muneeb79rashid@gmail.com",
+        "sendTo": "muneeb88rashid@gmail.com",
         "subject": "={{ $json.subject }}",
         "emailType": "text",
         "message": "={{ $json.email }}",
@@ -349,7 +349,7 @@
     },
     {
       "parameters": {
-        "sendTo": "muneeb79rashid@gmail.com",
+        "sendTo": "muneeb88rashid@gmail.com",
         "subject": "={{ $('Edit Fields1').item.json.subject }}",
         "emailType": "text",
         "message": "={{ $('Edit Fields1').item.json.email }}",
@@ -373,7 +373,7 @@
     },
     {
       "parameters": {
-        "sendTo": "muneeb56rashid@gmail.com",
+        "sendTo": "muneeb54rashid@gmail.com",
         "subject": "={{ $('Edit Fields1').item.json.subject }}",
         "emailType": "text",
         "message": "={{ $('Edit Fields1').item.json.email }}",
@@ -794,7 +794,7 @@
     },
     {
       "parameters": {
-        "sendTo": "muneeb68rashid@gmail.com",
+        "sendTo": "muneeb0rashid@gmail.com",
         "subject": "={{ $('Append row in sheet').item.json.subject }}",
         "message": "={{ $('Append row in sheet').item.json.email }}",
         "options": {}
