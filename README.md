@@ -145,6 +145,8 @@ This project is licensed under the MIT License.
 
 **Muneeb**
 
+<img width="1920" height="905" alt="AI Invoice Processing System" src="https://github.com/user-attachments/assets/8b7cb415-e6fe-4163-abf1-36d07053d408" />
+
 AI Automation Developer passionate about building intelligent workflows using **n8n**, **Google Gemini**, and modern APIs to automate business processes.
 
 ---
