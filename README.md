@@ -148,6 +148,12 @@ This project is licensed under the MIT License.
 <img width="1920" height="511" alt="AI Invoice Processing System pic" src="https://github.com/user-attachments/assets/eebaf8c8-dfbb-4bd0-874a-874f5294c3ea" />
 
 
+
+https://github.com/user-attachments/assets/1e0a3f30-ccbb-4341-b2a4-bc19d6e465c3
+
+
+
+
 AI Automation Developer passionate about building intelligent workflows using **n8n**, **Google Gemini**, and modern APIs to automate business processes.
 
 ---
